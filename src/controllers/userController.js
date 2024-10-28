@@ -1,6 +1,6 @@
 const { Pool } = require('pg');
 const { v4: uuidv4 } = require('uuid');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 // Configurando o pool de conexões com o PostgreSQL
 const pool = new Pool({
