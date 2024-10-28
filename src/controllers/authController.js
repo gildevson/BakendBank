@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const pool = require('../config/dbConfig'); // Certifique-se de que o arquivo dbConfig.js está corretamente configurado
 const { StatusCodes } = require('http-status-codes');
 
