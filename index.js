@@ -3,7 +3,6 @@ const cors = require('cors');
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// Configuração do banco de dados PostgreSQL usando 'pg'
 const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, PGPORT, PORT } = process.env;
 
 const pool = new Pool({
@@ -15,44 +14,41 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
-// Inicializando o aplicativo Express
 const app = express();
 
-// Configuração de CORS com domínio específico
 app.use(cors({
-    origin: 'https://remessasegura.netlify.app', // Substitua pelo domínio do frontend
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
-}));
-
-// Habilitar requisições OPTIONS para CORS
-app.options('*', cors({
     origin: 'https://remessasegura.netlify.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
 
-app.use(express.json()); // Middleware para permitir JSON no corpo da requisição
+app.use(express.json());
 
-// Importação de rotas
-const authRoutes = require('./src/routes/authRoutes'); // Ajuste o caminho conforme necessário
-const userRoutes = require('./src/routes/userRoutes'); // Ajuste o caminho conforme necessário
+const authRoutes = require('./src/routes/authRoutes'); 
+const userRoutes = require('./src/routes/userRoutes'); 
 
-// Configuração das rotas
 app.use('/api', userRoutes);
 app.use('/auth', authRoutes);
 
-// Rota principal para testes
 app.get('/', (req, res) => {
     res.send('Servidor está rodando!');
 });
 
-// Iniciando o servidor
+// Rota para testar a conexão com o banco de dados
+app.get('/db-test', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT NOW()');
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error('Erro ao conectar ao banco de dados:', err);
+        res.status(500).json({ message: 'Erro ao conectar ao banco de dados' });
+    }
+});
+
 app.listen(PORT || 3000, () => {
     console.log(`Servidor rodando na porta ${PORT || 3000}`);
 });
 
-// Função para obter a versão do PostgreSQL usando 'postgres' se necessário
 const postgres = require('postgres');
 const sql = postgres({
     host: PGHOST,
