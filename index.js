@@ -17,7 +17,21 @@ const pool = new Pool({
 
 // Inicializando o aplicativo Express
 const app = express();
-app.use(cors()); // Middleware para habilitar CORS
+
+// Configuração de CORS com domínio específico
+app.use(cors({
+    origin: 'https://remessasegura.netlify.app', // Substitua pelo domínio do frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
+
+// Habilitar requisições OPTIONS para CORS
+app.options('*', cors({
+    origin: 'https://remessasegura.netlify.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
+
 app.use(express.json()); // Middleware para permitir JSON no corpo da requisição
 
 // Importação de rotas
