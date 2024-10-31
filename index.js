@@ -22,12 +22,7 @@ app.use(cors({
     credentials: true
 }));
 
-// Habilitar requisições OPTIONS para preflight CORS
-app.options('*', cors({
-    origin: 'https://remessasegura.netlify.app',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
-}));
+app.options('*', cors());
 
 app.use(express.json());
 
@@ -41,7 +36,6 @@ app.get('/', (req, res) => {
     res.send('Servidor está rodando!');
 });
 
-// Rota para testar a conexão com o banco de dados
 app.get('/db-test', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW()');
@@ -54,17 +48,4 @@ app.get('/db-test', async (req, res) => {
 
 app.listen(PORT || 3000, () => {
     console.log(`Servidor rodando na porta ${PORT || 3000}`);
-});
-
-const postgres = require('postgres');
-const sql = postgres({
-    host: PGHOST,
-    database: PGDATABASE,
-    username: PGUSER,
-    password: PGPASSWORD,
-    port: 5432,
-    ssl: 'require',
-    connection: {
-        options: `project=${process.env.ENDPOINT_ID}`,
-    },
 });
