@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, PGPORT, PORT } = process.env;
 
+// Configuração do Pool de Conexão com o Banco de Dados usando pg
 const pool = new Pool({
     host: PGHOST,
     user: PGUSER,
@@ -16,26 +17,32 @@ const pool = new Pool({
 
 const app = express();
 
+// Configuração de CORS para permitir requisições da origem Netlify
 app.use(cors({
     origin: 'https://remessasegura.netlify.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
 
+// Habilitar requisições OPTIONS para preflight CORS
 app.options('*', cors());
 
+// Middleware para interpretar requisições com JSON
 app.use(express.json());
 
+// Importar e usar rotas
 const authRoutes = require('./src/routes/authRoutes'); 
 const userRoutes = require('./src/routes/userRoutes'); 
 
 app.use('/api', userRoutes);
 app.use('/auth', authRoutes);
 
+// Rota de teste para verificar se o servidor está ativo
 app.get('/', (req, res) => {
     res.send('Servidor está rodando!');
 });
 
+// Rota para testar a conexão com o banco de dados
 app.get('/db-test', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW()');
@@ -46,6 +53,7 @@ app.get('/db-test', async (req, res) => {
     }
 });
 
+// Iniciar o servidor na porta definida
 app.listen(PORT || 3000, () => {
     console.log(`Servidor rodando na porta ${PORT || 3000}`);
 });
