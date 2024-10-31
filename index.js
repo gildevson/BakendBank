@@ -22,6 +22,13 @@ app.use(cors({
     credentials: true
 }));
 
+// Habilitar requisições OPTIONS para preflight CORS
+app.options('*', cors({
+    origin: 'https://remessasegura.netlify.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
+
 app.use(express.json());
 
 const authRoutes = require('./src/routes/authRoutes'); 
