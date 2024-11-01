@@ -55,7 +55,7 @@ async function createUser(req, res) {
     }
 }
 
-// Função para listar usuários
+// Função para listar usuários d
 async function listUsers(req, res) {
     try {
         const result = await pool.query(`

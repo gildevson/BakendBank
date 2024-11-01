@@ -17,14 +17,15 @@ const pool = new Pool({
 
 const app = express();
 
-// Configuração do CORS personalizada
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://remessasegura.netlify.app');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    next();
-});
+// Configuração do CORS usando o middleware 'cors'
+const corsOptions = {
+    origin: 'https://remessasegura.netlify.app', // Substitua pelo domínio do seu frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true // Permite o envio de cookies com as requisições
+};
+
+app.use(cors(corsOptions)); // Aplica o middleware de CORS
 
 // Middleware para interpretar requisições com JSON
 app.use(express.json());
