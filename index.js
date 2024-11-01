@@ -17,16 +17,14 @@ const pool = new Pool({
 
 const app = express();
 
-// Configuração de CORS para permitir requisições da origem Netlify
-app.use(cors({
-    origin: ['https://remessasegura.netlify.app', 'https://backend-bank.vercel.app'], // Permitir as duas URLs
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
-    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
-    credentials: true
-}))
-
-// Habilitar requisições OPTIONS para preflight CORS
-app.options('*', cors());
+// Configuração do CORS personalizada
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://remessasegura.netlify.app');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+});
 
 // Middleware para interpretar requisições com JSON
 app.use(express.json());
