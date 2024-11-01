@@ -19,11 +19,11 @@ const app = express();
 
 // Configuração de CORS para permitir requisições da origem Netlify
 app.use(cors({
-    origin: 'https://remessasegura.netlify.app/', // Permitir somente o domínio do Netlify
+    origin: ['https://remessasegura.netlify.app', 'https://backend-bank.vercel.app'], // Permitir as duas URLs
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Métodos permitidos
     allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
     credentials: true
-}));
+}))
 
 // Habilitar requisições OPTIONS para preflight CORS
 app.options('*', cors());

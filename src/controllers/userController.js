@@ -9,7 +9,7 @@ const pool = new Pool({
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
     port: process.env.PGPORT || 5432,
-    ssl: { rejectUnauthorized: false } // Verifique se isso é necessário para seu ambiente de produção
+    ssl: { rejectUnauthorized: false } // Necessário para ambientes de produção como o Neon
 });
 
 // Função para criar usuário
@@ -17,26 +17,18 @@ async function createUser(req, res) {
     const { nome, email, password, permission_id } = req.body;
     const userId = uuidv4();
 
-    // Validação básica dos campos obrigatórios
-    if (!nome || !email || !password || !permission_id) {
-        return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
-    }
-
-    // Validação de formato de email
+    // Validação de entrada
     const emailRegex = /\S+@\S+\.\S+/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({ message: 'Email inválido.' });
-    }
-
-    // Validação de senha: mínimo 6 caracteres
-    if (password.length < 6) {
-        return res.status(400).json({ message: 'A senha deve ter pelo menos 6 caracteres.' });
-    }
-
-    // Validação de permission_id (agora aceita números ou strings)
     const validPermissions = [1, 2]; // Exemplo de permissões válidas como números
-    if (!validPermissions.includes(parseInt(permission_id))) {
-        return res.status(400).json({ message: 'Permissão inválida.' });
+    const errors = [];
+
+    if (!nome) errors.push('Nome é obrigatório.');
+    if (!email || !emailRegex.test(email)) errors.push('Email inválido.');
+    if (!password || password.length < 6) errors.push('A senha deve ter pelo menos 6 caracteres.');
+    if (!validPermissions.includes(parseInt(permission_id))) errors.push('Permissão inválida.');
+
+    if (errors.length > 0) {
+        return res.status(400).json({ message: errors.join(' ') });
     }
 
     try {
@@ -59,7 +51,7 @@ async function createUser(req, res) {
         return res.status(201).json(newUser.rows[0]);
     } catch (error) {
         console.error('Erro ao criar usuário:', error);
-        return res.status(500).json({ message: 'Erro ao criar usuário: ' + error.message });
+        return res.status(500).json({ message: 'Erro ao criar usuário. Tente novamente mais tarde.' });
     }
 }
 
@@ -73,7 +65,7 @@ async function listUsers(req, res) {
         return res.status(200).json(result.rows);
     } catch (error) {
         console.error('Erro ao listar usuários:', error);
-        return res.status(500).json({ message: 'Erro ao listar usuários: ' + error.message });
+        return res.status(500).json({ message: 'Erro ao listar usuários. Tente novamente mais tarde.' });
     }
 }
 
@@ -89,12 +81,11 @@ async function deleteUser(req, res) {
         }
 
         // Excluir o usuário
-        const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [userId]);
-
+        await pool.query('DELETE FROM users WHERE id = $1', [userId]);
         return res.status(200).json({ message: 'Usuário excluído com sucesso.' });
     } catch (error) {
         console.error('Erro ao excluir usuário:', error);
-        return res.status(500).json({ message: 'Erro ao excluir usuário: ' + error.message });
+        return res.status(500).json({ message: 'Erro ao excluir usuário. Tente novamente mais tarde.' });
     }
 }
 
